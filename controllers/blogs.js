@@ -2,7 +2,7 @@ const {Blog} = require("../models");
 const router = require('express').Router()
 
 const blogFinder = async (req, res, next) => {
-    req.blog = await Blog.findByPk(req.params.id);
+    req.blog = await Blog.findByPk(Number(req.params.id));
     next()
 }
 
@@ -17,6 +17,16 @@ router.post("/", async (req, res) => {
         return res.json(blog)
     } catch (error) {
         return res.status(400).json({error})
+    }
+})
+
+router.put("/:id", blogFinder, async (req, res) => {
+    if (req.blog) {
+        req.blog.likes = req.body.likes
+        await req.blog.save()
+        res.json(req.blog)
+    } else {
+        res.status(404).end()
     }
 })
 
