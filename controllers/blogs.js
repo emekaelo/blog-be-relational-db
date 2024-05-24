@@ -1,6 +1,7 @@
 const {Blog, User} = require("../models");
 const middleware = require("../util/middleware");
 const {Op} = require("sequelize");
+const {sequelize} = require("../util/db");
 const router = require('express').Router()
 
 router.get("/", async (req, res) => {
@@ -27,7 +28,8 @@ router.get("/", async (req, res) => {
             model: User,
             attributes: {exclude: ['createdAt', 'updatedAt']}
         },
-        where
+        where,
+        order: sequelize.literal('likes DESC')
     })
     res.json(blogs);
 })
