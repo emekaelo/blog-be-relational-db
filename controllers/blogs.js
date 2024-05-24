@@ -27,10 +27,15 @@ router.put("/:id", middleware.blogFinder, async (req, res) => {
     }
 })
 
-router.delete("/:id", middleware.blogFinder, async (req, res) => {
-    if (req.blog) {
-        await req.blog.destroy()
-        res.json(req.blog)
+router.delete("/:id", middleware.blogFinder, middleware.tokenExtractor, async (req, res) => {
+    const user = await User.findByPk(req.decodedToken.id);
+    if (req.blog) { // If blog is found
+        if (req.blog.userId === user.id) { // If logged in user created found blog
+            await req.blog.destroy()
+            res.json(req.blog)
+        } else {
+            res.status(403).json({error: "User can't delete item they did not create"});
+        }
     } else {
         res.status(404).end()
     }
