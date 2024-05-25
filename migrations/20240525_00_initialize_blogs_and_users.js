@@ -59,7 +59,7 @@ module.exports = {
             updated_at: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
-            }
+            },
         })
 
         await queryInterface.addColumn('blogs', 'user_id', {
