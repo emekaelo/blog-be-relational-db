@@ -37,7 +37,7 @@ router.get("/:username", async (req, res) => {
             as: 'bookmarks',
             attributes: {exclude: ['userId', 'updatedAt', 'createdAt']},
             through: {
-                attributes: []
+                attributes: ['id', 'read']
             }
         }
     })
