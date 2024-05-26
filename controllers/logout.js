@@ -3,7 +3,7 @@ const router = require("express").Router();
 const middleware = require("../util/middleware");
 
 router.delete('/', middleware.tokenExtractor, async (req, res) => {
-    const session = await Session.findOne({where: {userId: req.decodedToken.id}})
+    const session = await Session.findOne({where: {userId: req.user.id}})
     await session.destroy()
     res.json(session)
 })

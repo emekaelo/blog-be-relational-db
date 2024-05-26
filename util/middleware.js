@@ -21,35 +21,27 @@ const errorHandler = (error, request, response, next) => {
     next(error)
 }
 
-const tokenExtractor = (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
     const authorization = req.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-        try {
-            req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-            sessionValidity(req, res, next);
-        } catch {
-            return res.status(401).json({error: 'token invalid'})
+    const session = await Session.findOne({
+        where: {sessionId: authorization.substring(7)},
+        include: {
+            model: User
         }
-    } else {
-        return res.status(401).json({error: 'token missing'})
+    })
+    if (!session) {
+        return res.status(401).json({error: 'No valid session'})
     }
-}
-
-const sessionValidity = async (req, res, next) => {
-    const user = await User.findByPk(req.decodedToken.id)
-    if (user.disabled) {
+    if (session.user.disabled) {
         return res.status(401).json({error: 'User is disabled'})
     }
 
-    const session = await Session.findOne({where: {userId: user.id}})
-    if (session) {
-        if (session.sessionId !== req.get('authorization').substring(7)) {
-            res.status(401).json({error: 'Session expired'})
-        }
-    } else {
-        return res.status(401).json({error: 'No session available'})
+    req.user = session.user;
+
+    if (!authorization || !authorization.toLowerCase().startsWith('bearer ')) {
+        return res.status(401).json({error: 'token missing'})
     }
-    next()
+    next();
 }
 
 module.exports = {

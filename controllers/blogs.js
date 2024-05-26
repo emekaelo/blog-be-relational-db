@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", middleware.tokenExtractor, async (req, res) => {
     try {
-        const user = await User.findByPk(req.decodedToken.id)
+        const user = await User.findByPk(req.user.id)
         const blog = await Blog.create({...req.body, userId: user.id})
         return res.json(blog)
     } catch (error) {
@@ -55,7 +55,7 @@ router.put("/:id", middleware.blogFinder, async (req, res) => {
 })
 
 router.delete("/:id", middleware.blogFinder, middleware.tokenExtractor, async (req, res) => {
-    const user = await User.findByPk(req.decodedToken.id);
+    const user = await User.findByPk(req.user.id);
     if (req.blog) { // If blog is found
         if (req.blog.userId === user.id) { // If logged in user created found blog
             await req.blog.destroy()

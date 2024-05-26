@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
 router.put('/:id', middleware.tokenExtractor, async (req, res) => {
     const readingItem = await ReadingList.findByPk(req.params.id)
     if (readingItem) { // If item is found in readinglist
-        if (readingItem.userId === req.decodedToken.id) {
+        if (readingItem.userId === req.user.id) {
             readingItem.read = req.body.read
             await readingItem.save()
             res.json(readingItem)

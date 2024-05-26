@@ -13,6 +13,8 @@ Blog.belongsTo(User)
 User.belongsToMany(Blog, {through: ReadingList, as: 'bookmarks'}) // An alias must be used if the models already have prior relationships
 Blog.belongsToMany(User, {through: ReadingList, as: 'users_added'})
 
+Session.belongsTo(User)
+
 module.exports = {
     Blog,
     User,
