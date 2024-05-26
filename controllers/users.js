@@ -30,6 +30,12 @@ router.put("/:username", async (req, res) => {
 })
 
 router.get("/:username", async (req, res) => {
+    const where = {}
+
+    if (req.query.read) {
+        where.read = req.query.read === "true"
+    }
+
     const user = await User.findOne({
         where: {username: req.params.username},
         include: {
@@ -37,7 +43,8 @@ router.get("/:username", async (req, res) => {
             as: 'bookmarks',
             attributes: {exclude: ['userId', 'updatedAt', 'createdAt']},
             through: {
-                attributes: ['id', 'read']
+                attributes: ['id', 'read'],
+                where
             }
         }
     })
